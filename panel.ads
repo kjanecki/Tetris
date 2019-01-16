@@ -3,7 +3,7 @@ with Bricks;
 
 package panel is
 
-    height : constant Integer := 12;
+    height : constant Integer := 14;
     width : constant Integer := 12;
 
     subtype PanelHeight is Integer range 1..height-1;
@@ -19,6 +19,7 @@ package panel is
     protected Graph is
         function getValue(x : GraphWidth; y : GraphHeight) return GraphValue;
         procedure setValue(x : GraphWidth; y : GraphHeight; val : GraphValue);
+        procedure reset;
     private
         gameGraph : GraphType := (others => (others => GraphValue'First));
     end Graph;
@@ -66,6 +67,7 @@ package panel is
     procedure quitGame(str : String);
 
     task game is
+        entry reset;
         entry quit;
     end game;
 end panel;

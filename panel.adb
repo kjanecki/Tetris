@@ -17,6 +17,11 @@ package body panel is
         begin
             gameGraph(x,y) := val;
         end setValue;
+
+        procedure reset is
+        begin
+            gameGraph := (others => (others => GraphValue'First));
+        end reset;
     end Graph;
 
     procedure drawElement(pos : PanelPosition; str : String) is
@@ -250,23 +255,34 @@ package body panel is
     end quitGame;
 
     task body game is
-        D : Duration := 0.3;
+        D : Duration := 0.4;
         T : Time;
         doQuit : Boolean := false;
         scorePos : Position;
         score : Integer := 0;
+
+        procedure init is
+        begin
+            score := 0;
+            Graph.reset;
+            initializeFallingBrick(currentFallingBrick);
+            Screen.clear;
+            writeFrame((2*width)-2,height, scorePos);
+            Screen.draw(scorePos, score'Img);
+            drawBrick(currentFallingBrick); 
+        end init;
+
     begin
         
-        initializeFallingBrick(currentFallingBrick);
-        Screen.clear;
-        writeFrame(12,22, scorePos);
-        Screen.draw(scorePos, score'Img);
-        drawBrick(currentFallingBrick);
-        delay(Duration(1));
-
+        init;
+        
         gameLoop: loop
             T := Clock;
-            select 
+            select
+                accept reset do
+                    init;
+                end reset;
+            or
                 accept quit do
                     doQuit := True;    
                 end quit;

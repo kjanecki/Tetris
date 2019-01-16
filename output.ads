@@ -20,6 +20,6 @@ package output is
         procedure draw(pos : Position; str : String);
     end Screen;
 
-    procedure writeFrame(height : Integer; width : Integer; pos : out Position);
+    procedure writeFrame(width : Integer; height : Integer; pos : out Position);
 
 end output;

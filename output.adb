@@ -35,7 +35,7 @@ package body output is
 
     end Screen;
 
-    procedure writeFrame(height : Integer; width : Integer; pos : out Position) is
+    procedure writeFrame(width : Integer; height : Integer; pos : out Position) is
     begin
         for i in 1..(height-1) loop
             Screen.move((X => 1, Y => i)); Put("#");
