@@ -278,7 +278,12 @@ package body panel is
         
         gameLoop: loop
             T := Clock;
+            D := 0.4;
             select
+                accept speedUp do
+                    D := Duration(0);
+                end speedUp;
+            or
                 accept reset do
                     init;
                 end reset;
@@ -302,8 +307,7 @@ package body panel is
                     deleteFullRows(score);
                     Screen.draw(scorePos, score'Img);
                 else
-                    quitGame("Game over");
-                    exit gameLoop;
+                    init;
                 end if;
             else
                 fallDown(currentFallingBrick);

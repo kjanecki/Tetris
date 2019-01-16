@@ -3,7 +3,8 @@
 package body blinking is
 
     task body Blinker is
-        entry StartBlinking
+    begin
+        null;
     end Blinker;
 
 end blinking;

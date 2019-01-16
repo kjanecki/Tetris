@@ -67,6 +67,7 @@ package panel is
     procedure quitGame(str : String);
 
     task game is
+        entry speedUp;
         entry reset;
         entry quit;
     end game;

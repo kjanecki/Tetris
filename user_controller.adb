@@ -64,7 +64,7 @@ package body User_Controller is
                 when Move_Right => panel.moveFallingBrickRight;
                 when Rotate_Left => panel.rotateFallingBrickLeft;
                 when Rotate_Right => panel.rotateFallingBrickRight;
-                when Speed_Up => null;
+                when Speed_Up => panel.game.speedUp;
                 when Restart => panel.game.reset;
                 when Quit => null;
             end case;
