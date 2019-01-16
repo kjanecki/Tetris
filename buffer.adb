@@ -1,7 +1,4 @@
 
-with ada.text_io;
-use ada.text_io;
-
 package body buffer is
 
     protected body CircularBuffer is
@@ -39,6 +36,11 @@ package body buffer is
                 end if;
             end if;
         end get;
+
+        function isEmpty return Boolean is
+        begin
+            return empty;
+        end isEmpty;
 
     end CircularBuffer;
 end buffer;

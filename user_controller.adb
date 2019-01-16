@@ -1,6 +1,3 @@
-with panel;
-with tetris;
-with Ada.Text_IO;
 
 package body User_Controller is 
 
