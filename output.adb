@@ -35,7 +35,7 @@ package body output is
 
     end Screen;
 
-    procedure writeFrame(height : Integer; width : Integer) is
+    procedure writeFrame(height : Integer; width : Integer; pos : out Position) is
     begin
         for i in 1..(height-1) loop
             Screen.move((X => 1, Y => i)); Put("#");
@@ -45,6 +45,16 @@ package body output is
         for i in 1..width loop
             Put("#");
         end loop;
+
+        for i in 1..15 loop
+            for j in 1..height loop
+                Screen.draw((X => width+i, Y => j),"#");
+            end loop;
+        end loop;
+
+        Screen.draw((x=>width+2, y=>3)," Score:     ");
+        pos.x := width + 10;
+        pos.y := 3;
     end writeFrame;
     
 end output;

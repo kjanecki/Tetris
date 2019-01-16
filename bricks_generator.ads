@@ -7,10 +7,14 @@ package Bricks_Generator is
 
     procedure Get(b: in out Brick);
 
+    procedure TerminateGenerator;    
+
     private
         is_buf_full: boolean;
         function Get_Rand_Type return Positive;
         procedure Initialize_New_Brick(b: in out Brick);
-        task Generate;
+        task Generate is
+            entry quit;
+        end Generate;
 
 end Bricks_Generator;

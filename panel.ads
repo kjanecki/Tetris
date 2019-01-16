@@ -53,7 +53,7 @@ package panel is
     procedure fallDown(b : in out FallingBrick);
     function isOnGround(b : in FallingBrick) return Boolean;
     function emplaceFallingBrick(b : in FallingBrick) return Boolean;
-    procedure deleteFullRows;
+    procedure deleteFullRows(scoredPoints : in out Integer);
     procedure blink(rowIndex : in PanelHeight);
     procedure fallDownSettledBricks(startingRow : in PanelHeight);
     procedure gameOver;
@@ -62,5 +62,10 @@ package panel is
     procedure moveFallingBrickRight;
     procedure rotateFallingBrickLeft;
     procedure rotateFallingBrickRight;
-    procedure main;
+
+    procedure quitGame(str : String);
+
+    task game is
+        entry quit;
+    end game;
 end panel;

@@ -126,10 +126,11 @@ package body panel is
         return true;
     end emplaceFallingBrick;
 
-    procedure deleteFullRows is
+    procedure deleteFullRows(scoredPoints : in out Integer) is
     begin
         for i in reverse PanelHeight'Range loop
             while rowCapacities(i) = 0 loop
+                scoredPoints := scoredPoints + 1;
                 blink(i);
                 fallDownSettledBricks(i);
             end loop;
@@ -241,32 +242,56 @@ package body panel is
         end if;
     end rotateFallingBrickRight;
 
-    procedure main is
-    D : Duration := 0.3;
-    T : Time;
+    procedure quitGame(str : String) is
     begin
+        bricks_generator.TerminateGenerator;
+        Screen.clear;
+        Screen.draw((x=>1, y=>1),str);
+    end quitGame;
 
+    task body game is
+        D : Duration := 0.3;
+        T : Time;
+        doQuit : Boolean := false;
+        scorePos : Position;
+        score : Integer := 0;
+    begin
+        
         initializeFallingBrick(currentFallingBrick);
         Screen.clear;
-        writeFrame(12,22);
+        writeFrame(12,22, scorePos);
+        Screen.draw(scorePos, score'Img);
         drawBrick(currentFallingBrick);
         delay(Duration(1));
 
         gameLoop: loop
             T := Clock;
+            select 
+                accept quit do
+                    doQuit := True;    
+                end quit;
+            or
+                delay until T + D;
+            end select;
+
+            if doQuit = true then
+                quitGame("Quit game");
+                exit gameLoop;
+            end if;
+
             if isOnGround(currentFallingBrick) = true then
                 if emplaceFallingBrick(currentFallingBrick) = true then
                     initializeFallingBrick(currentFallingBrick);
                     drawBrick(currentFallingBrick);
-                    deleteFullRows;
+                    deleteFullRows(score);
+                    Screen.draw(scorePos, score'Img);
                 else
+                    quitGame("Game over");
                     exit gameLoop;
                 end if;
             else
                 fallDown(currentFallingBrick);
             end if;
-            delay until T + D;
-            delay D;
         end loop gameLoop;
-    end main;
+    end game;
 end panel;

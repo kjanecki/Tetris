@@ -2,6 +2,10 @@ with buffer;
 
 package body Bricks_Generator is
 
+    procedure TerminateGenerator is
+    begin
+        Generate.quit;
+    end TerminateGenerator;
 
     function Get_Rand_Type return Positive is
         type types_range is range 1..7;
@@ -25,16 +29,28 @@ package body Bricks_Generator is
     task body Generate is
         TimeDelay: Time := Clock;
         b: Brick;
-
+        doQuit : Boolean := false;
     begin
         loop
-            -- if not is_buf_full then
-                Initialize_New_Brick(b);
-                -- BrickBuffer.CircularBuffer.add(b);
-                Action.Add(b, is_buf_full);
-                TimeDelay := TimeDelay + milliseconds(5000);
-                delay until TimeDelay;
+                        -- if not is_buf_full then
+            Initialize_New_Brick(b);
+            -- BrickBuffer.CircularBuffer.add(b);
+            Action.Add(b, is_buf_full);    
             -- end if;
+
+            TimeDelay := TimeDelay + milliseconds(1000);
+            select
+                accept quit do
+                    doQuit := true;
+                end quit;
+            or
+                delay until TimeDelay;
+            end select;
+
+            if doQuit = true then
+                exit;
+            end if;
+
         end loop;
     end Generate;
     

@@ -2,6 +2,11 @@ with Ada.Real_Time, User_Controller_Action, Text_IO;
 use Ada.Real_Time, User_Controller_Action;
 
 package User_Controller is
-  task Get_Input;
+
+  procedure quitGame;
+
+  task Get_Input is
+    entry quit;
+  end Get_Input;
   task Execute;
 end User_Controller;

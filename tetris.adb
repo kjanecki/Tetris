@@ -4,5 +4,6 @@ with user_controller;
 
 procedure tetris is
 begin
-    main;
+    -- main;
+    null;
 end tetris;
