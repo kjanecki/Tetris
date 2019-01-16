@@ -1,5 +1,3 @@
-with buffer;
-
 package body Bricks_Generator is
 
     procedure TerminateGenerator is
@@ -32,13 +30,13 @@ package body Bricks_Generator is
         doQuit : Boolean := false;
     begin
         loop
-                        -- if not is_buf_full then
-            Initialize_New_Brick(b);
-            -- BrickBuffer.CircularBuffer.add(b);
-            Action.Add(b, is_buf_full);    
-            -- end if;
+            if not is_buf_full then
+                Initialize_New_Brick(b);
+                BrickBuffer.CircularBuffer.add(b);
+                Action.Add(b, is_buf_full);    
+            end if;
 
-            TimeDelay := TimeDelay + milliseconds(50);
+            TimeDelay := TimeDelay + milliseconds(1000);
             select
                 accept quit do
                     doQuit := true;
@@ -56,7 +54,6 @@ package body Bricks_Generator is
     
     procedure Get(b: in out Brick) is
     begin
-        -- BrickBuffer.CircularBuffer.get(b);
         Action.Get(b, is_buf_full);
     end Get;
 

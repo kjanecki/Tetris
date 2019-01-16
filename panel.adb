@@ -1,3 +1,4 @@
+
 package body panel is
 
 
@@ -136,6 +137,7 @@ package body panel is
                 r(i) := true;
                 rows(rowsNo+1) := i;
                 rowsNo := rowsNo + 1;
+                scoredPoints := scoredPoints + 5;
             end if;
         end loop;
     
@@ -365,6 +367,8 @@ package body panel is
             end if;
 
             if isOnGround(currentFallingBrick) = true then
+                score := score +1;
+                Action.Save(score);
                 if emplaceFallingBrick(currentFallingBrick) = true then
                     initializeFallingBrick(currentFallingBrick);
                     drawBrick(currentFallingBrick);

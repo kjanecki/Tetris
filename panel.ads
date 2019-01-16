@@ -1,5 +1,4 @@
 
-with Bricks;
 with buffer;
 with output;
 use output;
@@ -7,7 +6,7 @@ with Ada.Text_IO;
 with Ada.Calendar;
 use Ada.Calendar;
 with bricks_generator;
-
+with Bricks, Score;
 
 package panel is
 
