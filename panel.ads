@@ -1,5 +1,13 @@
 
 with Bricks;
+with buffer;
+with output;
+use output;
+with Ada.Text_IO;
+with Ada.Calendar;
+use Ada.Calendar;
+with bricks_generator;
+
 
 package panel is
 
@@ -11,7 +19,7 @@ package panel is
 
     subtype GraphValue is Integer range 0..2;
 
-    subtype GraphWidth is Integer range 1..width-1;
+    subtype GraphWidth is Integer range 1..width-2;
     subtype GraphHeight is Integer range 1..height-1;
 
     type GraphType is array (GraphWidth, GraphHeight) of GraphValue;
@@ -24,9 +32,20 @@ package panel is
         gameGraph : GraphType := (others => (others => GraphValue'First));
     end Graph;
 
-    subtype RowCapacity is Integer range 0..width-2;
-    maxRowCapacity : RowCapacity := width-2;
-    rowCapacities : array(1..height-1) of RowCapacity := (others=> maxRowCapacity);
+    type RowsToBlinkArray is array(1..4) of GraphHeight;
+
+    type RowsToBlink is record 
+        buff : RowsToBlinkArray;
+        rowsNumber : integer;
+    end record;
+
+    package BlinkBuffer is new buffer(max => 2, element_type => RowsToBlink);
+
+    subtype RowCapacity is Integer range 0..GraphWidth'Last;
+    maxRowCapacity : RowCapacity := RowCapacity'Last;
+    rowCapacities : array(GraphHeight) of RowCapacity := (others=> maxRowCapacity);
+
+    type RowsArray is array(PanelHeight'Range) of boolean;
 
     type Direction is (Left,Right,Down,Up);
 
@@ -54,9 +73,9 @@ package panel is
     procedure fallDown(b : in out FallingBrick);
     function isOnGround(b : in FallingBrick) return Boolean;
     function emplaceFallingBrick(b : in FallingBrick) return Boolean;
-    procedure deleteFullRows(scoredPoints : in out Integer);
+    procedure findFullRows(r : in out RowsArray);
     procedure blink(rowIndex : in PanelHeight);
-    procedure fallDownSettledBricks(startingRow : in PanelHeight);
+    procedure fallDownSettledBricks(rows : RowsToBlink; r : in out RowsArray);
     procedure gameOver;
  
     procedure moveFallingBrickLeft;
@@ -66,7 +85,12 @@ package panel is
 
     procedure quitGame(str : String);
 
+    task blinker is
+        entry quit;
+    end blinker;    
+
     task game is
+        entry deleteRows(rows : RowsToBlink);
         entry speedUp;
         entry reset;
         entry quit;

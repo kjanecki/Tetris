@@ -40,5 +40,10 @@ package body buffer is
             end if;
         end get;
 
+        function isEmpty return Boolean is
+        begin
+            return empty;
+        end isEmpty;
+
     end CircularBuffer;
 end buffer;

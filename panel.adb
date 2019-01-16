@@ -1,11 +1,7 @@
-with output;
-use output;
-with Ada.Text_IO;
-with Ada.Calendar;
-use Ada.Calendar;
-with bricks_generator;
-
 package body panel is
+
+
+    flag : Boolean := false;
 
     protected body Graph is
         function getValue(x : GraphWidth; y : GraphHeight) return GraphValue is
@@ -53,8 +49,8 @@ package body panel is
         for i in 1..b.shape.points'Last loop
             it := (b.shape.points(i).x+b.x, y => b.shape.points(i).y+b.y);
             rowCapacities(it.y) := rowCapacities(it.y) + 1;
-            drawElement(it,"  ");       
-            Graph.setValue(it.x, it.y, 0);                
+            drawElement(it,"  ");
+            Graph.setValue(it.x, it.y, 0);  
         end loop;
     end clearBrick;
 
@@ -131,16 +127,22 @@ package body panel is
         return true;
     end emplaceFallingBrick;
 
-    procedure deleteFullRows(scoredPoints : in out Integer) is
+    procedure findFullRows(r : in out RowsArray) is
+        rows : RowsToBlinkArray := (others => GraphHeight'First);
+        rowsNo : Integer := 0;
     begin
         for i in reverse PanelHeight'Range loop
-            while rowCapacities(i) = 0 loop
-                scoredPoints := scoredPoints + 1;
-                blink(i);
-                fallDownSettledBricks(i);
-            end loop;
+            if rowCapacities(i) = 0 and r(i) /= true then
+                r(i) := true;
+                rows(rowsNo+1) := i;
+                rowsNo := rowsNo + 1;
+            end if;
         end loop;
-    end deleteFullRows;
+    
+        if rowsNo /= 0 then    
+            BlinkBuffer.CircularBuffer.add((buff => rows, rowsNumber => rowsNo));
+        end if;
+    end findFullRows;
 
     procedure blink(rowIndex : in PanelHeight) is
 
@@ -156,26 +158,41 @@ package body panel is
         for i in PanelWidth'Range loop
             Graph.setValue(i, rowIndex, 0);
         end loop;
-        rowCapacities(rowIndex) := maxRowCapacity;
     end blink;
     
-    procedure fallDownSettledBricks(startingRow : in PanelHeight) is
-    r : PanelHeight;
+    procedure fallDownSettledBricks(rows : RowsToBlink; r : in out RowsArray) is
+    fullRows : array(GraphHeight'Range) of Integer := (others => 0);
+    cnt : Integer := 0;
     begin
-        r := startingRow - 1;
-        while rowCapacities(r) < maxRowCapacity loop
-            for i in PanelWidth'Range loop
-                if Graph.getValue(i,r) = 2 then
-                    Graph.setValue(i,r,0);
-                    drawElement((x => i, y => r),"  "); 
-                    drawElement((x => i, y => r+1),"[]");
-                    Graph.setValue(i,r+1, 2);
-                end if;
-            end loop;
-            rowCapacities(r+1) := rowCapacities(r);
-            rowCapacities(r) := maxRowCapacity;
-            r := r - 1;
+        for i in 1..rows.rowsNumber loop
+            fullRows(rows.buff(i)) := 1;
         end loop;
+
+        clearBrick(currentFallingBrick);
+        for i in reverse GraphHeight'Range loop
+            if fullRows(i) = 0 then
+                if cnt /= 0 then
+                    for j in GraphWidth'Range loop
+                        if Graph.getValue(j,i) = 2 then
+                            Graph.setValue(j,i, 0);
+                            drawElement((x => j, y => i),"  "); 
+                            drawElement((x => j, y => i+cnt),"[]");
+                            Graph.setValue(j,i+cnt, 2);
+                        end if;
+                    end loop;
+                    rowCapacities(i+cnt) := rowCapacities(i);   
+                end if;
+            else
+                cnt := cnt + 1;
+                rowCapacities(i) := maxRowCapacity;
+                r(i) := false;
+                for j in PanelWidth'Range loop
+                    Graph.setValue(j,i, 0);
+                    drawElement((x => j, y => i),"  ");
+                end loop;
+            end if;
+        end loop;
+        drawBrick(currentFallingBrick);
     end fallDownSettledBricks;
 
     procedure gameOver is
@@ -247,11 +264,53 @@ package body panel is
         end if;
     end rotateFallingBrickRight;
 
+    task body blinker is
+
+        procedure blinkRows(rows : RowsToBlink) is
+        begin
+            for i in 1..7 loop
+                for j in 1..rows.rowsNumber loop
+                    if i mod 2 = 0 then
+                        Screen.draw((X => PanelWidth'First + 1, Y=> rows.buff(j)), "[][][][][][][][][][]");
+                    else
+                        Screen.draw((X => PanelWidth'First + 1, Y=> rows.buff(j)), "                    ");
+                    end if;
+                end loop;
+                delay(Duration(0.2));
+            end loop;
+        end blinkRows;
+
+        r : RowsToBlink;
+        doQuit : Boolean := false;
+    begin
+        loop
+            select
+                accept quit do
+                    doQuit := true;
+                end quit;
+            or
+                delay Duration(0.1);
+            end select;
+
+            if doQuit = true then
+                exit;
+            end if;
+            
+            if BlinkBuffer.CircularBuffer.isEmpty = false then
+                BlinkBuffer.CircularBuffer.get(r);
+                blinkRows(r);
+                game.deleteRows(r);
+            end if;
+        end loop;
+    end blinker;
+
     procedure quitGame(str : String) is
     begin
         bricks_generator.TerminateGenerator;
+        blinker.quit;
         Screen.clear;
         Screen.draw((x=>1, y=>1),str);
+        
     end quitGame;
 
     task body game is
@@ -260,6 +319,7 @@ package body panel is
         doQuit : Boolean := false;
         scorePos : Position;
         score : Integer := 0;
+        blinkingRows : RowsArray := (others => false);
 
         procedure init is
         begin
@@ -275,11 +335,15 @@ package body panel is
     begin
         
         init;
-        
         gameLoop: loop
             T := Clock;
             D := 0.4;
             select
+                accept deleteRows(rows : RowsToBlink) do
+                    fallDownSettledBricks(rows,blinkingRows);
+                    flag := true;
+                end deleteRows;
+            or
                 accept speedUp do
                     D := Duration(0);
                 end speedUp;
@@ -304,13 +368,14 @@ package body panel is
                 if emplaceFallingBrick(currentFallingBrick) = true then
                     initializeFallingBrick(currentFallingBrick);
                     drawBrick(currentFallingBrick);
-                    deleteFullRows(score);
+                    findFullRows(blinkingRows);
                     Screen.draw(scorePos, score'Img);
                 else
                     init;
                 end if;
             else
                 fallDown(currentFallingBrick);
+
             end if;
         end loop gameLoop;
     end game;
