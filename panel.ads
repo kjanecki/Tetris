@@ -1,5 +1,5 @@
 
-with Bricks;
+with Bricks, Score;
 
 package panel is
 

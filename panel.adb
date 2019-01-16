@@ -4,6 +4,8 @@ with Ada.Text_IO;
 with Ada.Calendar;
 use Ada.Calendar;
 with bricks_generator;
+with Score_Action;
+use Score_Action;
 
 package body panel is
 
@@ -135,7 +137,7 @@ package body panel is
     begin
         for i in reverse PanelHeight'Range loop
             while rowCapacities(i) = 0 loop
-                scoredPoints := scoredPoints + 1;
+                scoredPoints := scoredPoints + 5;
                 blink(i);
                 fallDownSettledBricks(i);
             end loop;
@@ -301,6 +303,8 @@ package body panel is
             end if;
 
             if isOnGround(currentFallingBrick) = true then
+                score := score +1;
+                Action.Save(score);
                 if emplaceFallingBrick(currentFallingBrick) = true then
                     initializeFallingBrick(currentFallingBrick);
                     drawBrick(currentFallingBrick);
