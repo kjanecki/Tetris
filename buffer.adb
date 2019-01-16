@@ -1,7 +1,4 @@
 
-with ada.text_io;
-use ada.text_io;
-
 package body buffer is
 
     protected body CircularBuffer is

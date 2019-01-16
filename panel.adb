@@ -1,8 +1,7 @@
 
 package body panel is
 
-
-    flag : Boolean := false;
+    score : Integer := 0;
 
     protected body Graph is
         function getValue(x : GraphWidth; y : GraphHeight) return GraphValue is
@@ -137,7 +136,7 @@ package body panel is
                 r(i) := true;
                 rows(rowsNo+1) := i;
                 rowsNo := rowsNo + 1;
-                scoredPoints := scoredPoints + 5;
+                score := score + 5;
             end if;
         end loop;
     
@@ -200,7 +199,7 @@ package body panel is
     procedure gameOver is
     begin
         Screen.clear;
-        Ada.Text_IO.Put_Line("Game Over.");
+        Screen.putString("Game Over.");
     end gameOver;
 
     procedure moveFallingBrickLeft is
@@ -310,6 +309,7 @@ package body panel is
     begin
         bricks_generator.TerminateGenerator;
         blinker.quit;
+        Scores.Save_Score.quit;
         Screen.clear;
         Screen.draw((x=>1, y=>1),str);
         
@@ -320,13 +320,13 @@ package body panel is
         T : Time;
         doQuit : Boolean := false;
         scorePos : Position;
-        score : Integer := 0;
         blinkingRows : RowsArray := (others => false);
 
         procedure init is
         begin
             score := 0;
             Graph.reset;
+            rowCapacities := (others => maxRowCapacity);
             initializeFallingBrick(currentFallingBrick);
             Screen.clear;
             writeFrame((2*width)-2,height, scorePos);
@@ -343,7 +343,6 @@ package body panel is
             select
                 accept deleteRows(rows : RowsToBlink) do
                     fallDownSettledBricks(rows,blinkingRows);
-                    flag := true;
                 end deleteRows;
             or
                 accept speedUp do
@@ -368,7 +367,7 @@ package body panel is
 
             if isOnGround(currentFallingBrick) = true then
                 score := score +1;
-                Action.Save(score);
+                Score_Action.Action.Save(score);
                 if emplaceFallingBrick(currentFallingBrick) = true then
                     initializeFallingBrick(currentFallingBrick);
                     drawBrick(currentFallingBrick);

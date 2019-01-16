@@ -1,12 +1,6 @@
 
-with buffer;
-with output;
-use output;
-with Ada.Text_IO;
-with Ada.Calendar;
-use Ada.Calendar;
-with bricks_generator;
-with Bricks, Score;
+with Bricks, Bricks_Generator, Scores, Buffer, Score_Action, Ada.Calendar, Output;
+use Output, Ada.Calendar;
 
 package panel is
 
