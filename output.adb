@@ -33,7 +33,7 @@ package body output is
 
     end Screen;
 
-    procedure writeFrame(width : Integer; height : Integer; pos : out Position) is
+    procedure writeFrame(width : Integer; height : Integer; pos : out Position; previewPos : out Position) is
     begin
         for i in 1..(height-1) loop
             Screen.move((X => 1, Y => i)); Put("#");
@@ -46,13 +46,15 @@ package body output is
 
         for i in 1..15 loop
             for j in 1..height loop
-                if i > 3 and i < 12 and j > 5 and j < height-3 then
+                if i > 2 and i < 13 and j > 6 and j < height-2 then
                     Screen.draw((X => width+i, Y => j)," ");
                 else
                     Screen.draw((X => width+i, Y => j),"#");
                 end if;
             end loop;
         end loop;
+        previewPos.x := width+4;
+        previewPos.y := 7;
 
         Screen.draw((x=>width+2, y=>3)," Score:     ");
         pos.x := width + 10;

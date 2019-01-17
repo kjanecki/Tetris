@@ -57,4 +57,9 @@ package body Bricks_Generator is
         Action.Get(b, is_buf_full);
     end Get;
 
+    procedure preview(b: in out Brick) is
+    begin
+        Action.preview(b, is_buf_full);
+    end preview;
+
 end Bricks_Generator;

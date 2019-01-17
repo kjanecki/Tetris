@@ -59,6 +59,9 @@ package panel is
 
     procedure drawElement(pos : PanelPosition; str : String);
     procedure initializeFallingBrick(b : out FallingBrick);
+    procedure previewNextFallingBrick(b : out FallingBrick);
+    procedure drawNextFallingBrickPreview(b : out FallingBrick; pos : Position);
+    procedure clearNextFallingBrickPreview(b : out FallingBrick; pos : Position);
     procedure drawBrick(b : FallingBrick);
     procedure clearBrick(b : FallingBrick);
     function checkMovingPossibility(posx : Integer; posy : Integer) return Boolean;

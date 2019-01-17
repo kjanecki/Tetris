@@ -10,6 +10,7 @@ package buffer is
     protected CircularBuffer is
         procedure add(elem : Element_Type);
         procedure get(elem : out Element_Type);
+        procedure preview(elem : out Element_Type);
         function isEmpty return Boolean;
         private
             buff : local_array;

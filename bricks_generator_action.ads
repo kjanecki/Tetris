@@ -7,6 +7,7 @@ package Bricks_Generator_Action is
     protected Action is
         procedure Add (b: in Brick; i: in out boolean);
         entry Get (b: in out Brick; i: in out boolean);
+        entry preview (b: in out Brick; i: in out boolean);
         private
             is_full: boolean := false;
             is_empty: boolean := true;

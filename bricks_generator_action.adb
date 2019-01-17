@@ -31,6 +31,12 @@ package body Bricks_Generator_Action is
         end if;
 
     end Get;
+
+    entry preview (b: in out Brick; i: in out boolean) when not is_empty is
+    begin
+        BrickBuffer.CircularBuffer.preview(b);
+    end preview;
+
   end Action;
 
 end Bricks_Generator_Action;

@@ -37,6 +37,13 @@ package body buffer is
             end if;
         end get;
 
+        procedure preview(elem : out Element_Type) is
+        begin
+            if not empty then
+                elem := buff(e);
+            end if;
+        end preview;
+
         function isEmpty return Boolean is
         begin
             return empty;

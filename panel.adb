@@ -28,9 +28,30 @@ package body panel is
     procedure initializeFallingBrick(b : out FallingBrick) is
     begin
         b.y := 0;
-        b.x := 3;
+        b.x := 4;
         bricks_generator.get(b.shape);
     end initializeFallingBrick;
+
+    procedure previewNextFallingBrick(b : out FallingBrick) is
+    begin
+        b.y := 0;
+        b.x := 4;
+        bricks_generator.preview(b.shape);
+    end previewNextFallingBrick;
+
+    procedure drawNextFallingBrickPreview(b : out FallingBrick; pos : Position) is
+    begin
+        for i in 1..b.shape.points'Last loop
+            Screen.draw((x => b.shape.points(i).x*2+pos.x, y => b.shape.points(i).y+pos.y), "[]");                
+        end loop;
+    end drawNextFallingBrickPreview;
+
+    procedure clearNextFallingBrickPreview(b : out FallingBrick; pos : Position) is
+    begin
+        for i in 1..b.shape.points'Last loop
+            Screen.draw((x => b.shape.points(i).x*2+pos.x, y => b.shape.points(i).y+pos.y), "  ");                
+        end loop;
+    end clearNextFallingBrickPreview;
 
     procedure drawBrick(b : FallingBrick) is
     it : PanelPosition;
@@ -322,7 +343,9 @@ package body panel is
         T : Time;
         doQuit : Boolean := false;
         scorePos : Position;
+        previewPos : Position;
         blinkingRows : RowsArray := (others => false);
+        nextBrick : FallingBrick;
 
         procedure init is
         begin
@@ -330,8 +353,11 @@ package body panel is
             Graph.reset;
             rowCapacities := (others => maxRowCapacity);
             initializeFallingBrick(currentFallingBrick);
+            initializeFallingBrick(nextBrick);
+            -- previewNextFallingBrick(nextBrick);
             Screen.clear;
-            writeFrame((2*width)-2,height, scorePos);
+            writeFrame((2*width)-2,height, scorePos, previewPos);
+            drawNextFallingBrickPreview(nextBrick, previewPos);
             Screen.draw(scorePos, score'Img);
             drawBrick(currentFallingBrick); 
         end init;
@@ -372,7 +398,12 @@ package body panel is
                 Score_Action.Action.Save(score);
                 Scores.Save_Score.save_now;
                 if emplaceFallingBrick(currentFallingBrick) = true then
-                    initializeFallingBrick(currentFallingBrick);
+
+                    clearNextFallingBrickPreview(nextBrick, previewPos);
+                    currentFallingBrick := nextBrick;
+                    initializeFallingBrick(nextBrick);
+                    drawNextFallingBrickPreview(nextBrick, previewPos);
+
                     drawBrick(currentFallingBrick);
                     findFullRows(blinkingRows);
                     Screen.draw(scorePos, score'Img);

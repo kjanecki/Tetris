@@ -4,6 +4,7 @@ use Ada.Real_Time, Bricks_Generator_Action, Bricks;
 package Bricks_Generator is
     procedure Get(b: in out Brick);
     procedure TerminateGenerator;    
+    procedure preview(b: in out Brick);
 
     private
         is_buf_full: boolean;

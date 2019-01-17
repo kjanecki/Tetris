@@ -22,6 +22,6 @@ package output is
         procedure draw(pos : Position; str : String);
     end Screen;
 
-    procedure writeFrame(width : Integer; height : Integer; pos : out Position);
+    procedure writeFrame(width : Integer; height : Integer; pos : out Position; previewPos : out Position);
 
 end output;
