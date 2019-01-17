@@ -6,10 +6,6 @@ package body Bricks_Generator is
     end TerminateGenerator;
 
     function Get_Rand_Type return Positive is
-        type types_range is range 1..7;
-        package Rand_Types is new Ada.Numerics.Discrete_Random(types_range);
-        use Rand_Types;
-        Gen: Generator;
     begin
         Reset(Gen);
         return Positive(Random(Gen));
