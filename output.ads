@@ -16,6 +16,7 @@ package output is
 
     protected Screen is
 
+        procedure color;
         procedure clear; 
         procedure move(to : Position);
         procedure putString(str : String);

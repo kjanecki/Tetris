@@ -349,6 +349,7 @@ package body panel is
 
         procedure init is
         begin
+            -- Screen.Color;
             score := 0;
             Graph.reset;
             rowCapacities := (others => maxRowCapacity);

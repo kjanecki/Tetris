@@ -5,6 +5,19 @@ package body output is
 
     protected body Screen is
 
+        procedure color is
+        begin
+            New_Line;
+            Put(ASCII.ESC & "[");
+            Int_IO.Put(0,1);
+            Put(";");
+            Int_IO.Put(31,2);
+            Put("m");
+        end color;
+
+        -- \033[31m
+        -- "\e]P9E33636"    
+
         procedure clear is
         begin
             Put(ASCII.ESC & "[2J"); 
