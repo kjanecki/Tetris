@@ -36,7 +36,10 @@ package panel is
 
     subtype RowCapacity is Integer range 0..GraphWidth'Last;
     maxRowCapacity : RowCapacity := RowCapacity'Last;
+    type AtomicArray is array(GraphHeight) of RowCapacity;
+    
     rowCapacities : array(GraphHeight) of RowCapacity := (others=> maxRowCapacity);
+    pragma atomic_component (rowCapacities);
 
     type RowsArray is array(PanelHeight'Range) of boolean;
 
