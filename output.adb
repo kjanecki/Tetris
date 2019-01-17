@@ -46,7 +46,11 @@ package body output is
 
         for i in 1..15 loop
             for j in 1..height loop
-                Screen.draw((X => width+i, Y => j),"#");
+                if i > 3 and i < 12 and j > 5 and j < height-3 then
+                    Screen.draw((X => width+i, Y => j)," ");
+                else
+                    Screen.draw((X => width+i, Y => j),"#");
+                end if;
             end loop;
         end loop;
 
