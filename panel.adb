@@ -137,6 +137,8 @@ package body panel is
                 rows(rowsNo+1) := i;
                 rowsNo := rowsNo + 1;
                 score := score + 5;
+                Score_Action.Action.Save(score);
+                Scores.Save_Score.save_now;
             end if;
         end loop;
     
@@ -368,6 +370,7 @@ package body panel is
             if isOnGround(currentFallingBrick) = true then
                 score := score +1;
                 Score_Action.Action.Save(score);
+                Scores.Save_Score.save_now;
                 if emplaceFallingBrick(currentFallingBrick) = true then
                     initializeFallingBrick(currentFallingBrick);
                     drawBrick(currentFallingBrick);

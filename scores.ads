@@ -2,7 +2,11 @@ with Ada.Real_Time, Score_Action, Ada, Ada.Text_IO, Ada.Streams, Ada.Streams.Str
 use Ada.Real_Time, Score_Action, Ada, Ada.Streams;
 
 package Scores is
+  package  IntIO is new Ada.Text_IO.Integer_IO (Integer);
+  Log : Ada.Text_IO.File_Type;
+
   task Save_Score is
+    entry save_now;
     entry quit;
   end Save_Score;
   private

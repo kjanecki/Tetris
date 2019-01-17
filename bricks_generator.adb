@@ -36,7 +36,7 @@ package body Bricks_Generator is
                 Action.Add(b, is_buf_full);    
             end if;
 
-            TimeDelay := TimeDelay + milliseconds(1000);
+            TimeDelay := TimeDelay + milliseconds(2000);
             select
                 accept quit do
                     doQuit := true;
