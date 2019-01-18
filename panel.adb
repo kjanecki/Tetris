@@ -335,7 +335,8 @@ package body panel is
         Scores.Save_Score.quit;
         Screen.clear;
         Screen.draw((x=>1, y=>1),str);
-        
+        Screen.quit;
+
     end quitGame;
 
     task body game is
@@ -357,7 +358,7 @@ package body panel is
             initializeFallingBrick(nextBrick);
             -- previewNextFallingBrick(nextBrick);
             Screen.clear;
-            writeFrame((2*width)-2,height, scorePos, previewPos);
+            Screen.writeFrame((2*width)-2,height, scorePos, previewPos);
             drawNextFallingBrickPreview(nextBrick, previewPos);
             Screen.draw(scorePos, score'Img);
             drawBrick(currentFallingBrick); 

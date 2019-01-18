@@ -39,7 +39,7 @@ package panel is
     type AtomicArray is array(GraphHeight) of RowCapacity;
     
     rowCapacities : array(GraphHeight) of RowCapacity := (others=> maxRowCapacity);
-    pragma atomic_component (rowCapacities);
+    pragma atomic_components (rowCapacities);
 
     type RowsArray is array(PanelHeight'Range) of boolean;
 
