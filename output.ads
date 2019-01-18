@@ -23,6 +23,7 @@ package output is
         entry draw(pos : Position; str : String);
         entry writeFrame(width : Integer; height : Integer; pos : out Position; previewPos : out Position);
         entry quit;
+        entry displayGameOverMsg;
     end Screen;
 
 end output;

@@ -89,6 +89,31 @@ package body output is
             pos.y := 3;
         end writeFrame_p;
 
+        procedure displayGameOverMsg_p is
+        width : Integer := 30   ;
+        height : Integer := 9;
+        begin
+            clear_p;
+            move_p((x=>1,y=>1));
+            for i in 1..width loop
+                Put("*");
+            end loop;
+            for i in 1..height loop
+                move_p((X => 1, Y => i)); Put("*");
+                move_p((X => width, Y => i)); Put("*");
+            end loop;
+            move_p((x=>2,y=>height));
+            for i in 2..width-1 loop
+                Put("*");
+            end loop;
+
+            move_p((x=>12,y=>2)); putString_p("GAME OVER!");
+            move_p((x=>5,y=>4)); putString_p("You have lost the game.");
+            move_p((x=>7,y=>6)); putString_p("quit     play again");
+            move_p((x=>7,y=>7)); putString_p(" Q           R");
+
+        end displayGameOverMsg_p;
+
     doQuit : Boolean := false;
     begin
         loop
@@ -120,6 +145,10 @@ package body output is
                 accept writeFrame(width : Integer; height : Integer; pos : out Position; previewPos : out Position) do
                     writeFrame_p(width, height, pos, previewPos);
                 end writeFrame;
+            or
+                accept displayGameOverMsg do
+                    displayGameOverMsg_p;
+                end displayGameOverMsg;
             or
                 delay until Clock + Duration(1);
             end select;

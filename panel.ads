@@ -58,6 +58,8 @@ package panel is
     
     currentFallingBrick : FallingBrick;
 
+    isDefeated : boolean := false;
+
     type Brick is array(Integer range 1..4) of PanelPosition;
 
     procedure drawElement(pos : PanelPosition; str : String);
@@ -89,7 +91,6 @@ package panel is
     end blinker;    
 
     task game is
-        entry finish;
         entry deleteRows(rows : RowsToBlink);
         entry speedUp;
         entry reset;

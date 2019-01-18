@@ -140,7 +140,7 @@ package body panel is
     begin
         for i in 1..b.shape.points'last loop
             if b.shape.points(i).y+b.y = 1 then
-                gameOver;
+                -- gameOver;
                 return false;
             end if;
             Graph.setValue(b.shape.points(i).x+b.x, b.shape.points(i).y+b.y, 2);
@@ -227,16 +227,20 @@ package body panel is
 
     procedure moveFallingBrickLeft is
     begin
-        clearBrick(currentFallingBrick);
-        moveBrick(currentFallingBrick, Left);
-        drawBrick(currentFallingBrick);
+        if not isDefeated then
+            clearBrick(currentFallingBrick);
+            moveBrick(currentFallingBrick, Left);
+            drawBrick(currentFallingBrick);
+        end if;
     end moveFallingBrickLeft;
 
     procedure moveFallingBrickRight is
     begin
-        clearBrick(currentFallingBrick);
-        moveBrick(currentFallingBrick, Right);
-        drawBrick(currentFallingBrick);
+        if not isDefeated then
+            clearBrick(currentFallingBrick);
+            moveBrick(currentFallingBrick, Right);
+            drawBrick(currentFallingBrick);
+        end if;
     end moveFallingBrickRight;
 
     procedure rotateFallingBrickLeft is
@@ -244,23 +248,25 @@ package body panel is
     isRotationPossible : Boolean := true;
     newx : Integer := 0;
     begin
-        b := currentFallingBrick.shape;
-        newx := currentFallingBrick.x;
-        bricks.Rotate_Left(b, newx);
-        
-        for i in b.points'Range loop
-            if checkMovingPossibility(b.points(i).x + newx,
-                b.points(i).y + currentFallingBrick.y) = false then
-                isRotationPossible := false;
-                exit;
-            end if;
-        end loop;
+        if not isDefeated then
+            b := currentFallingBrick.shape;
+            newx := currentFallingBrick.x;
+            bricks.Rotate_Left(b, newx);
+            
+            for i in b.points'Range loop
+                if checkMovingPossibility(b.points(i).x + newx,
+                    b.points(i).y + currentFallingBrick.y) = false then
+                    isRotationPossible := false;
+                    exit;
+                end if;
+            end loop;
 
-        if isRotationPossible = true then
-            clearBrick(currentFallingBrick);
-            currentFallingBrick.shape := b;
-            currentFallingBrick.x := newx;
-            drawBrick(currentFallingBrick);
+            if isRotationPossible = true then
+                clearBrick(currentFallingBrick);
+                currentFallingBrick.shape := b;
+                currentFallingBrick.x := newx;
+                drawBrick(currentFallingBrick);
+            end if; 
         end if;
     end rotateFallingBrickLeft;
 
@@ -269,22 +275,24 @@ package body panel is
     isRotationPossible : Boolean := true;
     newx : Integer := 0;
     begin
-        b := currentFallingBrick.shape;
-        bricks.Rotate_Right(b, newx);
-        
-        for i in b.points'Range loop
-            if checkMovingPossibility(b.points(i).x + currentFallingBrick.x,
-                b.points(i).y + currentFallingBrick.y) = false then
-                isRotationPossible := false;
-                exit;
-            end if;
-        end loop;
+        if not isDefeated then
+            b := currentFallingBrick.shape;
+            bricks.Rotate_Right(b, newx);
+            
+            for i in b.points'Range loop
+                if checkMovingPossibility(b.points(i).x + currentFallingBrick.x,
+                    b.points(i).y + currentFallingBrick.y) = false then
+                    isRotationPossible := false;
+                    exit;
+                end if;
+            end loop;
 
-        if isRotationPossible = true then
-            clearBrick(currentFallingBrick);
-            currentFallingBrick.shape := b;
-            -- currentFallingBrick.x := newx;
-            drawBrick(currentFallingBrick);
+            if isRotationPossible = true then
+                clearBrick(currentFallingBrick);
+                currentFallingBrick.shape := b;
+                -- currentFallingBrick.x := newx;
+                drawBrick(currentFallingBrick);
+            end if;
         end if;
     end rotateFallingBrickRight;
 
@@ -346,7 +354,6 @@ package body panel is
         scorePos : Position;
         previewPos : Position;
         blinkingRows : RowsArray := (others => false);
-        isDefeated : boolean := false;
         nextBrick : FallingBrick;
 
         procedure init is
@@ -372,22 +379,23 @@ package body panel is
             T := Clock;
             D := 0.4;
             select
-                when not isDefeated =>
                 accept deleteRows(rows : RowsToBlink) do
-                    fallDownSettledBricks(rows,blinkingRows);
+                    if not isDefeated then
+                        fallDownSettledBricks(rows,blinkingRows);
+                    end if;
                 end deleteRows;
             or
-                when not isDefeated =>
                 accept speedUp do
-                    D := Duration(0);
+                    if not isDefeated then
+                        D := Duration(0);
+                    end if;
                 end speedUp;
             or
-                when not isDefeated =>
                 accept reset do
+                    isDefeated := false;
                     init;
                 end reset;
             or
-                when not isDefeated =>
                 accept quit do
                     doQuit := True;    
                 end quit;
@@ -400,26 +408,28 @@ package body panel is
                 exit gameLoop;
             end if;
 
-            if isOnGround(currentFallingBrick) = true then
-                score := score +1;
-                Score_Action.Action.Save(score);
-                Scores.Save_Score.save_now;
-                if emplaceFallingBrick(currentFallingBrick) = true then
+            if not isDefeated then
+                if isOnGround(currentFallingBrick) = true then
+                    score := score +1;
+                    Score_Action.Action.Save(score);
+                    Scores.Save_Score.save_now;
+                    if emplaceFallingBrick(currentFallingBrick) = true then
 
-                    clearNextFallingBrickPreview(nextBrick, previewPos);
-                    currentFallingBrick := nextBrick;
-                    initializeFallingBrick(nextBrick);
-                    drawNextFallingBrickPreview(nextBrick, previewPos);
+                        clearNextFallingBrickPreview(nextBrick, previewPos);
+                        currentFallingBrick := nextBrick;
+                        initializeFallingBrick(nextBrick);
+                        drawNextFallingBrickPreview(nextBrick, previewPos);
 
-                    drawBrick(currentFallingBrick);
-                    findFullRows(blinkingRows);
-                    Screen.draw(scorePos, score'Img);
+                        drawBrick(currentFallingBrick);
+                        findFullRows(blinkingRows);
+                        Screen.draw(scorePos, score'Img);
+                    else
+                        isDefeated := true;
+                        Screen.displayGameOverMsg;
+                    end if;
                 else
-                    init;
+                    fallDown(currentFallingBrick);
                 end if;
-            else
-                fallDown(currentFallingBrick);
-
             end if;
         end loop gameLoop;
     end game;
