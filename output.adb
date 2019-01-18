@@ -44,6 +44,14 @@ package body output is
             putString_p(str);
         end draw_p;
 
+        procedure writeInstruction(startPos : Position) is
+
+        begin
+            draw(startPos, "<-    rotate    speed    ->    quit    reset");
+            draw((x => startPos.x, y => startPos.y+1), 
+                           "a        q        s       d     Q        R  ");
+        end writeInstruction;
+
         procedure writeFrame_p(width : Integer; height : Integer; pos : out Position; previewPos : out Position) is
         begin
             for i in 1..(height-1) loop
@@ -64,6 +72,9 @@ package body output is
                     end if;
                 end loop;
             end loop;
+
+            writeInstruction((x=>1, y => height - 2));
+
             previewPos.x := width+4;
             previewPos.y := 7;
 
