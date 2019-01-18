@@ -89,6 +89,7 @@ package panel is
     end blinker;    
 
     task game is
+        entry finish;
         entry deleteRows(rows : RowsToBlink);
         entry speedUp;
         entry reset;

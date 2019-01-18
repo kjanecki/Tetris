@@ -346,6 +346,7 @@ package body panel is
         scorePos : Position;
         previewPos : Position;
         blinkingRows : RowsArray := (others => false);
+        isDefeated : boolean := false;
         nextBrick : FallingBrick;
 
         procedure init is
@@ -371,18 +372,22 @@ package body panel is
             T := Clock;
             D := 0.4;
             select
+                when not isDefeated =>
                 accept deleteRows(rows : RowsToBlink) do
                     fallDownSettledBricks(rows,blinkingRows);
                 end deleteRows;
             or
+                when not isDefeated =>
                 accept speedUp do
                     D := Duration(0);
                 end speedUp;
             or
+                when not isDefeated =>
                 accept reset do
                     init;
                 end reset;
             or
+                when not isDefeated =>
                 accept quit do
                     doQuit := True;    
                 end quit;
