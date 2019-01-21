@@ -7,7 +7,6 @@ package body Bricks_Generator is
 
     function Get_Rand_Type return Positive is
     begin
-        Reset(Gen);
         return Positive(Random(Gen));
     end Get_Rand_Type;
 
@@ -57,5 +56,8 @@ package body Bricks_Generator is
     begin
         Action.preview(b, is_buf_full);
     end preview;
+
+    begin
+        Reset(Gen);
 
 end Bricks_Generator;
