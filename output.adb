@@ -1,16 +1,29 @@
 
 package body output is
 
-    package Int_IO is new Ada.Text_IO.Integer_IO (Num => Integer);
+    task body Screen is
 
-    protected body Screen is
+        package Int_IO is new Ada.Text_IO.Integer_IO (Num => Integer);
 
-        procedure clear is
+        procedure color_p is
+        begin
+            New_Line;
+            Put(ASCII.ESC & "[");
+            Int_IO.Put(0,1);
+            Put(";");
+            Int_IO.Put(31,2);
+            Put("m");
+        end color_p;
+
+        -- \033[31m
+        -- "\e]P9E33636"    
+
+        procedure clear_p is
         begin
             Put(ASCII.ESC & "[2J"); 
-        end clear;
+        end clear_p;
 
-        procedure move(to : Position) is
+        procedure move_p(to : Position) is
         begin
             New_Line;
             Put(ASCII.ESC & "[");
@@ -18,47 +31,132 @@ package body output is
             Put(";");
             Int_IO.Put(to.X,1);
             Put("H");
-        end move;
+        end move_p;
 
-        procedure putString(str : String) is
+        procedure putString_p(str : String) is
         begin
             Ada.Text_IO.Put(str);
-        end putString;
+        end putString_p;
 
-        procedure draw(pos : Position; str : String) is
+        procedure draw_p(pos : Position; str : String) is
         begin
-            move(pos);
-            putString(str);
-        end draw;
+            move_p(pos);
+            putString_p(str);
+        end draw_p;
 
+        procedure writeInstruction(startPos : Position) is
+
+        begin
+            draw_p(startPos, " <-   rotate left  rotate right   ->");
+            draw_p((x => startPos.x, y => startPos.y+1), 
+                             " a         q            e          d");
+        end writeInstruction;
+
+        procedure writeFrame_p(width : Integer; height : Integer; pos : out Position; previewPos : out Position) is
+        begin
+            for i in 1..(height-1) loop
+                move_p((X => 1, Y => i)); Put("#");
+                move_p((X => width, Y => i)); Put("#");
+            end loop;
+            New_Line;
+            for i in 1..width loop
+                Put("#");
+            end loop;
+
+            for i in 1..15 loop
+                for j in 1..height loop
+                    if i > 2 and i < 13 and j > 6 and j < height-2 then
+                        draw_p((X => width+i, Y => j)," ");
+                    else
+                        draw_p((X => width+i, Y => j),"#");
+                    end if;
+                end loop;
+            end loop;
+
+            writeInstruction((x=>1, y => height+2));
+            draw_p((x => width + 16, y => 3),"  quit"); 
+            draw_p((x => width + 16, y => 4),"   Q");
+            draw_p((x => width + 16, y => 6),"  reset");
+            draw_p((x => width + 16, y => 7),"    R");
+            draw_p((x => width + 16, y => 9),"  speed");
+            draw_p((x => width + 16, y => 10),"   s");
+
+            previewPos.x := width+4;
+            previewPos.y := 7;
+
+            draw_p((x=>width+2, y=>3)," Score:     ");
+            pos.x := width + 10;
+            pos.y := 3;
+        end writeFrame_p;
+
+        procedure displayGameOverMsg_p is
+        width : Integer := 30   ;
+        height : Integer := 9;
+        begin
+            clear_p;
+            move_p((x=>1,y=>1));
+            for i in 1..width loop
+                Put("*");
+            end loop;
+            for i in 1..height loop
+                move_p((X => 1, Y => i)); Put("*");
+                move_p((X => width, Y => i)); Put("*");
+            end loop;
+            move_p((x=>2,y=>height));
+            for i in 2..width-1 loop
+                Put("*");
+            end loop;
+
+            move_p((x=>12,y=>2)); putString_p("GAME OVER!");
+            move_p((x=>5,y=>4)); putString_p("You have lost the game.");
+            move_p((x=>7,y=>6)); putString_p("quit     play again");
+            move_p((x=>7,y=>7)); putString_p(" Q           R");
+
+        end displayGameOverMsg_p;
+
+    doQuit : Boolean := false;
+    begin
+        loop
+            select 
+                accept quit do
+                    doQuit := true;
+                end quit;
+            or
+                accept clear do
+                    clear_p;
+                end clear;
+            or
+                accept color do
+                    color_p;
+                end color;
+            or
+                accept move(to : Position) do
+                    move_p(to);
+                end move;
+            or
+                accept putString(str : String) do
+                    putString_p(str);
+                end putString;
+            or
+                accept draw(pos : Position; str : String) do
+                    draw_p(pos, str);
+                end draw;
+            or
+                accept writeFrame(width : Integer; height : Integer; pos : out Position; previewPos : out Position) do
+                    writeFrame_p(width, height, pos, previewPos);
+                end writeFrame;
+            or
+                accept displayGameOverMsg do
+                    displayGameOverMsg_p;
+                end displayGameOverMsg;
+            or
+                delay until Clock + Duration(1);
+            end select;
+
+            if doQuit = true then
+                exit;
+            end if;
+        end loop;
     end Screen;
 
-    procedure writeFrame(width : Integer; height : Integer; pos : out Position; previewPos : out Position) is
-    begin
-        for i in 1..(height-1) loop
-            Screen.move((X => 1, Y => i)); Put("#");
-            Screen.move((X => width, Y => i)); Put("#");
-        end loop;
-        New_Line;
-        for i in 1..width loop
-            Put("#");
-        end loop;
-
-        for i in 1..15 loop
-            for j in 1..height loop
-                if i > 2 and i < 13 and j > 6 and j < height-2 then
-                    Screen.draw((X => width+i, Y => j)," ");
-                else
-                    Screen.draw((X => width+i, Y => j),"#");
-                end if;
-            end loop;
-        end loop;
-        previewPos.x := width+4;
-        previewPos.y := 7;
-
-        Screen.draw((x=>width+2, y=>3)," Score:     ");
-        pos.x := width + 10;
-        pos.y := 3;
-    end writeFrame;
-    
 end output;

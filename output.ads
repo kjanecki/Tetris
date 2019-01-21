@@ -1,6 +1,6 @@
 
-with Ada.Text_IO;
-use Ada.Text_IO;
+with Ada.Text_IO, Ada.Calendar;
+use Ada.Text_IO, Ada.Calendar;
 
 package output is
 
@@ -14,14 +14,16 @@ package output is
         y : Height;
     end record;
 
-    protected Screen is
+    task Screen is
 
-        procedure clear; 
-        procedure move(to : Position);
-        procedure putString(str : String);
-        procedure draw(pos : Position; str : String);
+        entry color;
+        entry clear; 
+        entry move(to : Position);
+        entry putString(str : String);
+        entry draw(pos : Position; str : String);
+        entry writeFrame(width : Integer; height : Integer; pos : out Position; previewPos : out Position);
+        entry quit;
+        entry displayGameOverMsg;
     end Screen;
-
-    procedure writeFrame(width : Integer; height : Integer; pos : out Position; previewPos : out Position);
 
 end output;
