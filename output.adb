@@ -1,22 +1,7 @@
 
 package body output is
-
     task body Screen is
-
-        package Int_IO is new Ada.Text_IO.Integer_IO (Num => Integer);
-
-        procedure color_p is
-        begin
-            New_Line;
-            Put(ASCII.ESC & "[");
-            Int_IO.Put(0,1);
-            Put(";");
-            Int_IO.Put(31,2);
-            Put("m");
-        end color_p;
-
-        -- \033[31m
-        -- "\e]P9E33636"    
+        package Int_IO is new Ada.Text_IO.Integer_IO (Num => Integer);  
 
         procedure clear_p is
         begin
@@ -45,15 +30,17 @@ package body output is
         end draw_p;
 
         procedure writeInstruction(startPos : Position) is
-
         begin
+            Colors.yellow;
             draw_p(startPos, " <-   rotate left  rotate right   ->");
             draw_p((x => startPos.x, y => startPos.y+1), 
                              " a         q            e          d");
+            Colors.white;
         end writeInstruction;
 
         procedure writeFrame_p(width : Integer; height : Integer; pos : out Position; previewPos : out Position) is
         begin
+            Colors.light_blue;
             for i in 1..(height-1) loop
                 move_p((X => 1, Y => i)); Put("#");
                 move_p((X => width, Y => i)); Put("#");
@@ -74,6 +61,7 @@ package body output is
             end loop;
 
             writeInstruction((x=>1, y => height+2));
+            Colors.yellow;
             draw_p((x => width + 16, y => 3),"  quit"); 
             draw_p((x => width + 16, y => 4),"   Q");
             draw_p((x => width + 16, y => 6),"  reset");
@@ -84,15 +72,18 @@ package body output is
             previewPos.x := width+4;
             previewPos.y := 7;
 
+            Colors.light_green;
             draw_p((x=>width+2, y=>3)," Score:     ");
             pos.x := width + 10;
             pos.y := 3;
+            Colors.white;
         end writeFrame_p;
 
         procedure displayGameOverMsg_p is
         width : Integer := 30   ;
         height : Integer := 9;
         begin
+            Colors.light_blue;
             clear_p;
             move_p((x=>1,y=>1));
             for i in 1..width loop
@@ -107,8 +98,10 @@ package body output is
                 Put("*");
             end loop;
 
+            Colors.red;
             move_p((x=>12,y=>2)); putString_p("GAME OVER!");
             move_p((x=>5,y=>4)); putString_p("You have lost the game.");
+            Colors.light_red;
             move_p((x=>7,y=>6)); putString_p("quit     play again");
             move_p((x=>7,y=>7)); putString_p(" Q           R");
 
@@ -125,10 +118,6 @@ package body output is
                 accept clear do
                     clear_p;
                 end clear;
-            or
-                accept color do
-                    color_p;
-                end color;
             or
                 accept move(to : Position) do
                     move_p(to);

@@ -50,12 +50,13 @@ package body User_Controller is
         begin
         loop
             TimeDelay := TimeDelay + milliseconds(50);
+            Action.Get(option);
+
             if option = Quit then
                 quitGame;
                 exit;
             end if;
 
-            Action.Get(option);
             case option is
                 when Move_Left => panel.moveFallingBrickLeft;
                 when Move_Right => panel.moveFallingBrickRight;
@@ -63,7 +64,7 @@ package body User_Controller is
                 when Rotate_Right => panel.rotateFallingBrickRight;
                 when Speed_Up => panel.game.speedUp;
                 when Restart => panel.game.reset;
-                when Quit => null;
+                when others => null;
             end case;
             delay until TimeDelay;
         end loop;

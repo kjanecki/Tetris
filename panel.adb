@@ -22,6 +22,7 @@ package body panel is
 
     procedure drawElement(pos : PanelPosition; str : String) is
     begin
+        Colors.set_random_color;
         Screen.draw((x => pos.x*2, y => pos.y), str);
     end drawElement;
 
@@ -358,7 +359,6 @@ package body panel is
 
         procedure init is
         begin
-            -- Screen.Color;
             score := 0;
             Graph.reset;
             rowCapacities := (others => maxRowCapacity);

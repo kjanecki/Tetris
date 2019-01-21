@@ -1,5 +1,5 @@
 
-with Ada.Text_IO, Ada.Calendar;
+with Ada.Text_IO, Ada.Calendar, Colors;
 use Ada.Text_IO, Ada.Calendar;
 
 package output is
@@ -15,8 +15,6 @@ package output is
     end record;
 
     task Screen is
-
-        entry color;
         entry clear; 
         entry move(to : Position);
         entry putString(str : String);

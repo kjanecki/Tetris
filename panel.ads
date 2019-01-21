@@ -1,5 +1,5 @@
 
-with Bricks, Bricks_Generator, Scores, Buffer, Score_Action, Ada.Calendar, Output;
+with Bricks, Bricks_Generator, Scores, Buffer, Score_Action, Ada.Calendar, Output, Colors;
 use Output, Ada.Calendar;
 
 package panel is
